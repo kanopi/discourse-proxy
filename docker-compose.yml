@@ -1,0 +1,78 @@
+version: '2'
+services:
+  nginx:
+    image: nginx:1.15-alpine
+    restart: unless-stopped
+    volumes:
+      - ./data/nginx:/etc/nginx/conf.d
+      - ./data/certbot/conf:/etc/letsencrypt
+      - ./data/certbot/www:/var/www/certbot
+    ports:
+      - "80:80"
+      - "443:443"
+    command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
+    depends_on:
+      - discourse
+    env_file:
+      - ./.env
+
+  certbot:
+    image: certbot/certbot
+    restart: unless-stopped
+    volumes:
+      - ./data/certbot/conf:/etc/letsencrypt
+      - ./data/certbot/www:/var/www/certbot
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+    env_file:
+      - ./.env
+
+  postgresql:
+    image: 'bitnami/postgresql:9.6'
+    volumes:
+      - 'postgresql_data:/bitnami'
+    env_file:
+      - ./.env
+
+  redis:
+    image: 'bitnami/redis:latest'
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+    volumes:
+      - 'redis_data:/bitnami'
+    env_file:
+      - ./.env
+
+  discourse:
+    image: 'bitnami/discourse:latest'
+    labels:
+      kompose.service.type: nodeport
+    depends_on:
+      - postgresql
+      - redis
+    volumes:
+      - 'discourse_data:/bitnami'
+    env_file:
+      - ./.env
+
+  sidekiq:
+    image: 'bitnami/discourse:latest'
+    depends_on:
+      - discourse
+    volumes:
+      - 'sidekiq_data:/bitnami'
+    command: 'nami start --foreground discourse-sidekiq'
+    env_file:
+      - ./.env
+    environment:
+      - DISCOURSE_HOST=discourse
+      - DISCOURSE_PORT=3000
+
+volumes:
+  postgresql_data:
+    driver: local
+  redis_data:
+    driver: local
+  discourse_data:
+    driver: local
+  sidekiq_data:
+    driver: local

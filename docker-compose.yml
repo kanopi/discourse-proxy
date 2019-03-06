@@ -13,6 +13,7 @@ services:
     command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
     depends_on:
       - discourse
+      - certbot
     env_file:
       - ./.env
 
@@ -28,6 +29,7 @@ services:
 
   postgresql:
     image: 'bitnami/postgresql:9.6'
+    restart: unless-stopped
     volumes:
       - 'postgresql_data:/bitnami'
     env_file:
@@ -35,6 +37,7 @@ services:
 
   redis:
     image: 'bitnami/redis:latest'
+    restart: unless-stopped
     environment:
       - ALLOW_EMPTY_PASSWORD=yes
     volumes:
@@ -44,6 +47,7 @@ services:
 
   discourse:
     image: 'bitnami/discourse:latest'
+    restart: unless-stopped
     labels:
       kompose.service.type: nodeport
     depends_on:

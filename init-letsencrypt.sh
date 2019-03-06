@@ -1,9 +1,9 @@
 #!/bin/bash
 
-domains=(example.com www.example.com)
+domains=("$@")
+email="" # Adding a valid address is strongly recommended
 rsa_key_size=4096
 data_path="./data/certbot"
-email="" # Adding a valid address is strongly recommended
 staging=0 # Set to 1 if you're testing your setup to avoid hitting request limits
 
 if [ -d "$data_path" ]; then
@@ -37,18 +37,17 @@ echo "### Starting nginx ..."
 docker-compose up --force-recreate -d nginx
 echo
 
-echo "### Deleting dummy certificate for $domains ..."
-docker-compose run --rm --entrypoint "\
-  rm -Rf /etc/letsencrypt/live/$domains && \
-  rm -Rf /etc/letsencrypt/archive/$domains && \
-  rm -Rf /etc/letsencrypt/renewal/$domains.conf" certbot
-echo
-
-
 echo "### Requesting Let's Encrypt certificate for $domains ..."
 #Join $domains to -d args
 domain_args=""
 for domain in "${domains[@]}"; do
+  echo "### Deleting dummy certificate for $domain ..."
+  docker-compose run --rm --entrypoint "\
+    rm -Rf /etc/letsencrypt/live/$domain && \
+    rm -Rf /etc/letsencrypt/archive/$domain && \
+    rm -Rf /etc/letsencrypt/renewal/$domain.conf" certbot
+  echo
+
   domain_args="$domain_args -d $domain"
 done
 
@@ -70,6 +69,3 @@ docker-compose run --rm --entrypoint "\
     --agree-tos \
     --force-renewal" certbot
 echo
-
-echo "### Reloading nginx ..."
-docker-compose exec nginx nginx -s reload

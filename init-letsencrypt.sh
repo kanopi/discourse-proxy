@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 domains=("$@")
 email="" # Adding a valid address is strongly recommended
 rsa_key_size=4096

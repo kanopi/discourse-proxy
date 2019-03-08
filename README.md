@@ -32,7 +32,7 @@ Otherwise consult the [Docker Compose Install Page](https://docs.docker.com/comp
 Clone the following project into the system.
 
 ```bash
-git clone https://github.com/kanopi/osce-discourse.git discourse
+git clone https://github.com/kanopi/discourse-proxy.git discourse
 ```
 
 ## Configuring

@@ -47,14 +47,16 @@ Edit the variables within the `.env` file as these will be necessary before sett
 
 ### 2. Configuring Nginx
 
-Generate the Nginx configuration. Copy the template provided below to `etc/nginx/discourse.conf`.
+Generate the Nginx configuration. Copy the template provided below to `data/nginx/discourse.conf`.
 
-Local Development use `etc/nginx/discourse.conf.local`.
-Production Development use `etc/nginx/discourse.conf.prod`.
+Local Development use `data/nginx/discourse.conf.local`.
+Production Development use `data/nginx/discourse.conf.prod`.
 
 Edit and replace the `www.example.com` with the hostname provided.
 
 ### 3. Let's Encrypt
+
+** NOTE ** This is only necessary if you have a public IP otherwise skip this step.
 
 Run the Let's Encrypt Init script so that the certificates can be generated. Running the follow command will work and replace the domain names `www.example.com` and `example.com` with any other domains that will need to be generated.
 

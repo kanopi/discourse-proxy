@@ -46,7 +46,7 @@ services:
       - ./.env
 
   discourse:
-    image: 'bitnami/discourse:latest'
+    image: 'bitnami/discourse:2'
     restart: unless-stopped
     labels:
       kompose.service.type: nodeport
@@ -55,11 +55,12 @@ services:
       - redis
     volumes:
       - 'discourse_data:/bitnami'
+      - './data/plugins:/bitnami/discourse/local-plugins'
     env_file:
       - ./.env
 
   sidekiq:
-    image: 'bitnami/discourse:latest'
+    image: 'bitnami/discourse:2'
     depends_on:
       - discourse
     volumes:

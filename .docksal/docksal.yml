@@ -4,6 +4,8 @@ services:
   postgresql:
     image: 'bitnami/postgresql:9.6'
     restart: unless-stopped
+    environment:
+      - POSTGRESQL_PASSWORD=bitnami1
     volumes:
       - 'postgresql_data:/bitnami'
     dns:

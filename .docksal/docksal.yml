@@ -2,10 +2,10 @@ version: '2.1'
 services:
 
   postgresql:
-    image: 'bitnami/postgresql:9.6'
+    image: 'bitnami/postgresql:11'
     restart: unless-stopped
     environment:
-      - POSTGRESQL_PASSWORD=bitnami1
+      - ALLOW_EMPTY_PASSWORD=yes
     volumes:
       - 'postgresql_data:/bitnami'
     dns:
@@ -13,7 +13,7 @@ services:
       - ${DOCKSAL_DNS2}
 
   redis:
-    image: 'bitnami/redis:latest'
+    image: 'bitnami/redis:5.0'
     restart: unless-stopped
     environment:
       - ALLOW_EMPTY_PASSWORD=yes
@@ -26,8 +26,6 @@ services:
   web:
     image: 'bitnami/discourse:2'
     restart: unless-stopped
-    labels:
-      kompose.service.type: nodeport
     depends_on:
       - postgresql
       - redis
